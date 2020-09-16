@@ -141,6 +141,10 @@ class rpshellPrompt(cmd.Cmd):
 
         """
         user.talk(arg)
+    
+    def complete_talk(self, text, line, begidx, endix):
+        """Auto complete when player uses 'talk' """
+        return tuple(i for i in worldRooms[user.location][NPC] if i.startswith(text))
 
     def sell(self, arg):
         """ todo """
@@ -151,10 +155,8 @@ class rpshellPrompt(cmd.Cmd):
         args_array = line.split(" ")
         if len(args_array) == 2:
             return [npc for npc in worldRooms[user.location][NPC] if npc.startswith(text)]
-        elif len(args_array) == 3:
-            return [item for item in items if item.startswith(text)]
-        else:
-            return []
+        elif len(args_array) >= 3:
+            return [item for item in user.inventory if item.startswith(text)]
 
     def do_quit(self, arg):
         """Quit the game."""

@@ -258,13 +258,13 @@ class player():
             # print player's inventory (to sell items)
             self.inv()
 
-        def sell(self, arg):
-            """sell items to specific NPC."""
-            pass
+    def sell(self, arg):
+        """sell items to specific NPC."""
+        pass
             
-        def buy(self, arg):
-            """buy items to specific NPC."""
-            pass
+    def buy(self, arg):
+        """buy items to specific NPC."""
+        pass
 
 
     def weight(self):
