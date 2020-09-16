@@ -4,7 +4,7 @@
 
 import cmd
 import os
-from termcolor import colored
+#from termcolor import colored
 
 from player import player
 from roomsData import *
@@ -15,14 +15,14 @@ user = player(15,30,'Home')
 
 class rpshellPrompt(cmd.Cmd):
 
-    prompt = '\u001b[36;1m'+worldRooms[user.location][REGION].upper()+'\u276D '+user.location+' \u232A '+'\u001b[0m'
+    prompt = BIGCYAN+worldRooms[user.location][REGION].upper()+'\u276D '+user.location+' \u232A '+ RESET
 
 
     def default(self, arg):
         print('I do not know this command. Type "help" to list available commands.')
 
     def update_prompt(self, old_loc, direction):
-        self.prompt = '\u001b[36;1m'+worldRooms[user.location][REGION].upper()+'\u276D '+ worldRooms[old_loc][direction]+' \u232A '+'\u001b[0m'
+        self.prompt = BIGCYAN+worldRooms[user.location][REGION].upper()+'\u276D '+ worldRooms[old_loc][direction]+' \u232A '+RESET
 
     def do_east(self, arg):
         """Go east if possible."""
@@ -131,6 +131,20 @@ class rpshellPrompt(cmd.Cmd):
     def do_inv(self, arg):
         """Shows your inventory."""
         user.inv()
+
+    def do_talk(self, arg):
+        """Talk to a present NPC
+
+        Parameters
+        ----------
+        arg : str, npc's name
+
+        """
+        user.talk(arg)
+
+    def complete_talk(self, text, line, begidx, endix):
+        """Auto completion when player uses 'talk'"""
+        return tuple(i for i in worldRooms[user.location][NPC] if i.startswith(text))
 
     def do_quit(self, arg):
         """Quit the game."""

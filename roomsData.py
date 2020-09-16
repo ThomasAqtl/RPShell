@@ -8,7 +8,8 @@ worldRooms = {
             GROUND : ['Basic steel sword', 'Health potion'],
             NORTH : 'My garden',
             SOUTH : 'Easten street of Homeland',
-            REGION : 'White Mountains'
+            REGION : 'White Mountains',
+            NPC : ['Oliver'],
             },
 
         'My garden' : {
@@ -16,6 +17,7 @@ worldRooms = {
             SHORTDESC : 'garden',
             NORTH : 'Nothing important',
             SOUTH : 'Home',
-            REGION : 'White Mountains'
+            REGION : 'White Mountains',
+            NPC : ['Bob', 'Emma']
             },
         }

@@ -1,8 +1,10 @@
 from ItemsData import *
 from roomsData import *
+from npcData import *
 from columnar import columnar
 import collections
 import textwrap
+import random
 
 class player():
     
@@ -32,7 +34,7 @@ class player():
     # \u25AA and u25AB are python encodings for little white and black squares
     def showHp(self):
         """Display current health points"""
-        print('Health : ','\u25AA' * self.hp,'\u25AB' * (self.hpmax-self.hp),' ',self.hp,'/',self.hpmax, sep='')
+        print('Health : ',HP * self.hp,MHP * (self.hpmax-self.hp),' ',self.hp,'/',self.hpmax, sep='')
 
     
     def take(self, arg):
@@ -147,7 +149,7 @@ class player():
             headers = ['Name', 'Quantity', 'Unit price', 'Weight', 'About']
             L.insert(len(set(self.inventory)), ['-'*len(headers[i]) for i in range(len(headers))])
             L.insert(len(L)-1, ['-'*len(headers[i]) for i in range(len(headers))])
-            print('\u001b[7m\u001b[1m'+'INVENTORY :'+'\u001b[0m')
+            print(INVERTED+BOLD+'INVENTORY :'+RESET)
             print(columnar(L, headers, no_borders=True, justify=['l','r','r','r','l']))
 
     def move(self, direction):
@@ -177,17 +179,21 @@ class player():
             return False
 
     def displayLoc(self):
-        """Display infos about the current location"""
-        loc = self.location
+        """Display infos about the current location : current room description,
+        takeable items, present npcs and possible exits."""
 
-        print('\u001b[7m\u001b[1m'+loc.upper()+'\u001b[0m')
-        # description of the room if possible
+        # highlighted location name
+        loc = self.location
+        print(INVERTED+BOLD+loc.upper()+RESET)
+
         if loc in worldRooms : 
+
+            # description of the room
             print('\n'.join(textwrap.wrap(worldRooms[loc][DESC], SCREEN_WIDTH)))
             print()
 
-            # print items on the ground if possible
-            print('\u001b[7m\u001b[1m'+'TAKEABLE ITEMS :'+'\u001b[0m')
+            # Takeable items (items on the ground)
+            print(INVERTED+BOLD+'TAKEABLE ITEMS :'+RESET)
             try:
                 L = []
                 ground = worldRooms[self.location][GROUND]
@@ -199,20 +205,67 @@ class player():
                 headers = ['Name', 'Description']
                 print(columnar(L, headers, no_borders=True))
             except:
-                print('None')
+                print('None\n')
+
+            # Present NPCs
+            print(INVERTED+BOLD+'PRESENT NPC(S) :'+RESET)
+            try:
+                L = []
+                npcs = worldRooms[self.location][NPC]
+                if len(npcs) > 0:
+                    for npc in npcs:
+                        l = []
+                        l.extend([npc, worldNpcs[npc][TYPE]])
+                        L.append(l)
+                headers = ['Name', 'Type']
+                print(columnar(L, headers, no_borders=True))
+            except:
+                print('None\n')
 
 
-            # print all possible exits
+            # All possible exits with associated room
             exits = []
             for direction in {NORTH,SOUTH,EAST,WEST,NORTHEAST,NORTHWEST,SOUTHEAST,SOUTHWEST}:
                 if direction in worldRooms[loc].keys():
                     exits.append([direction.upper(), worldRooms[loc][direction]])
             
-            print('\u001b[7m\u001b[1m'+'POSSIBLE PATHS :'+'\u001b[0m')
+            print(INVERTED+BOLD+'POSSIBLE PATHS :'+RESET)
             headers = ['Direction','Room']
             print(columnar(exits, headers, no_borders=True))
         else:
             print('There is no information about this room.')
+
+    def talk(self, arg):
+        """Talk to a specific npc. If the NPC can trade items, his shop and player's inventory are displayed."""
+        #Todo ajouter carac des items dans le shop
+        # check if npc are present in the room
+        if len(worldRooms[self.location][NPC]) == 0:
+            print('There is none to talk to here.')
+        
+        else:
+            if arg in worldRooms[self.location][NPC]:
+                print('\u001b[33;1m' + arg + ' : \u001b[0m' + '\u001b[33m' + random.choice(worldNpcs[arg][LINE]) + '\u001b[0m' )
+        
+            shop = []
+            for item in worldNpcs[arg][STOCK]:
+                shop.append([item, worldItems[item][PRICE], worldItems[item][DESC]])
+            
+            print('\u001b[7m\u001b[33;1m'+arg+' shop \u001b[0m')
+            headers = ('Name', 'Price', 'Description')
+            print(columnar(shop, headers, no_borders=True))
+
+
+            # print player's inventory (to sell items)
+            self.inv()
+
+        def sell(self, arg):
+            """sell items to specific NPC."""
+            pass
+            
+        def buy(self, arg):
+            """buy items to specific NPC."""
+            pass
+
 
     def weight(self):
         return sum(worldItems[item][WEIGHT] for item in self.inventory)

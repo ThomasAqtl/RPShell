@@ -32,4 +32,23 @@ TRADABLE = 'tradable' # form items that can be sold or not
 PRICE = 'price'
 WEIGHT = 'weight'
 
+# key words for npcs
+TYPE = "type"
+STOCK = "stock"
+WALLET = "wallet"
+LINE = "line"
+NPC =  "npc"
+
+
 SCREEN_WIDTH = 80
+
+# key word for special characters and colors
+INVERTED = '\u001b[7m'
+BOLD = '\u001b[1m'
+RESET = '\u001b[0m'
+
+YELLOW = '\u001b[33;1m'
+BIGCYAN = '\u001b[36;1m'
+
+HP = '\u25AA'
+MHP = '\u25AB' # Missing HP
