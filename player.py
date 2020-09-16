@@ -15,6 +15,7 @@ class player():
         self.capacity = 50
         self.location = location
         self.gold = 0
+        self.host = ''
 
     def heal(self, amount):
         """Deals [amount] hp"""
@@ -241,11 +242,15 @@ class player():
         # check if npc are present in the room
         if len(worldRooms[self.location][NPC]) == 0:
             print('There is none to talk to here.')
+            return False
+
+        elif arg == '':
+            print('Who do you want to talk to ? Type "look" to see present NPC(s)')
+            return False
         
-        else:
-            if arg in worldRooms[self.location][NPC]:
-                print('\u001b[33;1m' + arg + ' : \u001b[0m' + '\u001b[33m' + random.choice(worldNpcs[arg][LINE]) + '\u001b[0m' )
-        
+        elif arg in worldRooms[self.location][NPC]:
+            print('\u001b[33;1m' + arg + ' : \u001b[0m' + '\u001b[33m' + random.choice(worldNpcs[arg][WELCOME_LINE]) + '\u001b[0m' )
+    
             shop = []
             for item in worldNpcs[arg][STOCK]:
                 shop.append([item, worldItems[item][PRICE], worldItems[item][DESC]])
@@ -257,14 +262,35 @@ class player():
 
             # print player's inventory (to sell items)
             self.inv()
+            self.host = arg
+            return True
 
-        def sell(self, arg):
-            """sell items to specific NPC."""
-            pass
+        else:
+            print('The person you want to talk to does not exists or is not in the room.')
+            return False
+
+    def leave(self):
+        """Leave the current NPC"""
+        
+
+        if self.host == '':
+            print('You are not talking to anyone right now.')
+            return False
+        
+        else:
+            print('\u001b[33;1m' + self.host + ' : \u001b[0m' + '\u001b[33m' + random.choice(worldNpcs[self.host][BYE_LINE]) + '\u001b[0m' )
+            self.host = ''
+            return True
+
+    
+
+    def sell(self, arg):
+        """sell items to specific NPC."""
+        pass
             
-        def buy(self, arg):
-            """buy items to specific NPC."""
-            pass
+    def buy(self, arg):
+        """buy items to specific NPC."""
+        pass
 
 
     def weight(self):

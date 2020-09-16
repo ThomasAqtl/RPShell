@@ -21,56 +21,51 @@ class rpshellPrompt(cmd.Cmd):
     def default(self, arg):
         print('I do not know this command. Type "help" to list available commands.')
 
-    def update_prompt(self, old_loc, direction):
-        self.prompt = BIGCYAN+worldRooms[user.location][REGION].upper()+'\u276D '+ worldRooms[old_loc][direction]+' \u232A '+RESET
+    def update_prompt(self, loc, npc):
+        if npc == '' :
+            self.prompt = BIGCYAN+worldRooms[user.location][REGION].upper()+' \u276D '+ loc +' \u232A '+ RESET
+        else:
+            self.prompt = BIGCYAN+worldRooms[user.location][REGION].upper()+' \u276D '+ loc +' \u232A'+ YELLOW + npc + ' \u232A' + RESET
 
     def do_east(self, arg):
         """Go east if possible."""
-        old_loc = user.location
         if user.move('east'):
-            self.update_prompt(old_loc, EAST)
+            self.update_prompt(user.location, '')
     
     def do_west(self, arg):
         """Go west if possible."""
-        old_loc = user.location
         if user.move('west'):
-            self.update_prompt(old_loc, WEST)
+            self.update_prompt(user.location, '')
 
     def do_north(self, arg):
         """Go north if possible."""
-        old_loc = user.location
         if user.move('north'):
-            self.update_prompt(old_loc, NORTH)
+            self.update_prompt(user.location, '')
 
     def do_south(self, arg):
         """Go south if possible."""
-        old_loc = user.location
         if user.move('south'):
-            self.update_prompt(old_loc, SOUTH)
+            self.update_prompt(user.location, '')
 
     def do_northwest(self, arg):
         """Go northwest if possible."""
-        old_loc = user.location
         if user.move('northwest'):
-            self.update_prompt(old_loc, NORTHWEST)
+            self.update_prompt(user.location, '')
  
     def do_northeast(self, arg):
         """Go northeast if possible."""
-        old_loc = user.location
         if user.move('northeast'):
-            self.update_prompt(old_loc, NORTHEAST)
+            self.update_prompt(user.location, '')
 
     def do_southwest(self, arg):
         """Go southwest if possible."""
-        old_loc = user.location
         if user.move('southwest'):
-            self.update_prompt(old_loc, SOUTHWEST)
+            self.update_prompt(user.location, '')
 
     def do_southeast(self, arg):
         """Go southeast if possible."""
-        old_loc = user.location
         if user.move('southeast'):
-            self.update_prompt(old_loc, SOUTHEAST)
+            self.update_prompt(user.location, '')
         
     def do_take(self, arg):
         """Put item(s) in player's inventory if possible.
@@ -140,11 +135,17 @@ class rpshellPrompt(cmd.Cmd):
         arg : str, npc's name
 
         """
-        user.talk(arg)
+        if user.talk(arg):
+            self.update_prompt(user.location, arg)
 
     def complete_talk(self, text, line, begidx, endix):
         """Auto completion when player uses 'talk'"""
         return tuple(i for i in worldRooms[user.location][NPC] if i.startswith(text))
+
+    def do_leave(self, arg):
+        """Player leaves conversation with NPC"""
+        if user.leave():
+            self.update_prompt(user.location, '')
 
     def do_quit(self, arg):
         """Quit the game."""

@@ -36,7 +36,8 @@ WEIGHT = 'weight'
 TYPE = "type"
 STOCK = "stock"
 WALLET = "wallet"
-LINE = "line"
+WELCOME_LINE = "welcome_line"
+BYE_LINE =  "bye_line"
 NPC =  "npc"
 
 
