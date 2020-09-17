@@ -15,7 +15,7 @@ user = player(15,30,'Home')
 
 class rpshellPrompt(cmd.Cmd):
 
-    prompt = BIGCYAN+worldRooms[user.location][REGION].upper()+'\u276D '+user.location+' \u232A '+ RESET
+    prompt = BCYAN+worldRooms[user.location][REGION].upper()+'\u276D '+user.location+' \u232A '+ RESET
 
 
     def default(self, arg):
@@ -23,9 +23,9 @@ class rpshellPrompt(cmd.Cmd):
 
     def update_prompt(self, loc, npc):
         if npc == '' :
-            self.prompt = BIGCYAN+worldRooms[user.location][REGION].upper()+' \u276D '+ loc +' \u232A '+ RESET
+            self.prompt = BCYAN+worldRooms[user.location][REGION].upper()+' \u276D '+ loc +' \u232A '+ RESET
         else:
-            self.prompt = BIGCYAN+worldRooms[user.location][REGION].upper()+' \u276D '+ loc +' \u232A'+ YELLOW + npc + ' \u232A' + RESET
+            self.prompt = BCYAN+worldRooms[user.location][REGION].upper()+' \u276D '+ loc +' \u232A'+ GREEN + npc + ' \u232A' + RESET
 
     def do_east(self, arg):
         """Go east if possible."""

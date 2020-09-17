@@ -40,7 +40,6 @@ WELCOME_LINE = "welcome_line"
 BYE_LINE =  "bye_line"
 NPC =  "npc"
 
-
 SCREEN_WIDTH = 80
 
 # key word for special characters and colors
@@ -48,8 +47,17 @@ INVERTED = '\u001b[7m'
 BOLD = '\u001b[1m'
 RESET = '\u001b[0m'
 
-YELLOW = '\u001b[33;1m'
-BIGCYAN = '\u001b[36;1m'
+YELLOW = '\u001b[33m'
+BYELLOW = YELLOW.replace('m',';1m')
+
+CYAN = '\u001b[36m'
+BCYAN = CYAN.replace('m',';1m')
+
+MAGENTA = '\u001b[35m'
+BMAGENTA = MAGENTA.replace('m',';1m')
+
+GREEN = '\u001b[32m'
+BGREEN = GREEN.replace('m',';1m')
 
 HP = '\u25AA'
 MHP = '\u25AB' # Missing HP

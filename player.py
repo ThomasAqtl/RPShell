@@ -129,6 +129,7 @@ class player():
         else: # counts qty/items and retrieve infos about them
             counter = collections.Counter(self.inventory)
             L = []
+            L.append([BYELLOW+'GOLD'+RESET, YELLOW+str(self.gold)+RESET, '', '', ''])
             weight = []
             prices = []
             for i in counter.keys():
@@ -148,8 +149,9 @@ class player():
 
             # Better display
             headers = ['Name', 'Quantity', 'Unit price', 'Weight', 'About']
-            L.insert(len(set(self.inventory)), ['-'*len(headers[i]) for i in range(len(headers))])
-            L.insert(len(L)-1, ['-'*len(headers[i]) for i in range(len(headers))])
+            L.insert(1, ['-'*len(headers[i]) for i in range(len(headers))])
+            L.insert(len(set(self.inventory))+2, ['='*len(headers[i]) for i in range(len(headers))])
+            L.insert(len(L)-1, ['='*len(headers[i]) for i in range(len(headers))])
             print(INVERTED+BOLD+'INVENTORY :'+RESET)
             print(columnar(L, headers, no_borders=True, justify=['l','r','r','r','l']))
 
@@ -249,13 +251,13 @@ class player():
             return False
         
         elif arg in worldRooms[self.location][NPC]:
-            print('\u001b[33;1m' + arg + ' : \u001b[0m' + '\u001b[33m' + random.choice(worldNpcs[arg][WELCOME_LINE]) + '\u001b[0m' )
+            print(BOLD + BGREEN + arg + ' : ' + RESET + GREEN+ random.choice(worldNpcs[arg][WELCOME_LINE]) + RESET )
     
             shop = []
             for item in worldNpcs[arg][STOCK]:
                 shop.append([item, worldItems[item][PRICE], worldItems[item][DESC]])
             
-            print('\u001b[7m\u001b[33;1m'+arg+' shop \u001b[0m')
+            print(INVERTED +BOLD + BGREEN +arg+' shop :'+RESET)
             headers = ('Name', 'Price', 'Description')
             print(columnar(shop, headers, no_borders=True))
 
@@ -272,13 +274,12 @@ class player():
     def leave(self):
         """Leave the current NPC"""
         
-
         if self.host == '':
             print('You are not talking to anyone right now.')
             return False
         
         else:
-            print('\u001b[33;1m' + self.host + ' : \u001b[0m' + '\u001b[33m' + random.choice(worldNpcs[self.host][BYE_LINE]) + '\u001b[0m' )
+            print(BGREEN + BOLD + self.host + ' : ' + RESET + GREEN + random.choice(worldNpcs[self.host][BYE_LINE]) + RESET )
             self.host = ''
             return True
 
