@@ -6,7 +6,7 @@ import cmd
 import os
 #from termcolor import colored
 
-from player import player
+from player import player, worldNpcs
 from roomsData import *
 
 
@@ -141,6 +141,26 @@ class rpshellPrompt(cmd.Cmd):
     def complete_talk(self, text, line, begidx, endix):
         """Auto completion when player uses 'talk'"""
         return tuple(i for i in worldRooms[user.location][NPC] if i.startswith(text))
+
+    def do_shop(self, arg):
+        """Shows NPC's shop if player is talking to a NPC"""
+        user.shop()
+
+    def do_sell(self, arg):
+        """Player sells item to the NPC he is talking to."""
+        user.sell(arg)
+
+    def complete_sell(self, text, line, begidx, endix):
+        """Auto compeltion when player uses 'sell'"""
+        return tuple(i+', ' for i in user.inventory if i.startswith(text))
+
+    def do_buy(self, arg):
+        """Player buys item to the NPC he is talking to."""
+        user.buy(arg)
+
+    def complete_buy(self, text, line, begidx, endix):
+        """Auto completion when player uses 'buy'"""
+        return tuple(i+', ' for i in worldNpcs[user.host][STOCK] if i.startswith(text))
 
     def do_leave(self, arg):
         """Player leaves conversation with NPC"""

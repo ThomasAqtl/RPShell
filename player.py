@@ -14,7 +14,7 @@ class player():
         self.inventory = []
         self.capacity = 50
         self.location = location
-        self.gold = 0
+        self.gold = 50
         self.host = ''
 
     def heal(self, amount):
@@ -125,6 +125,7 @@ class player():
         
         if len(self.inventory) == 0:
             print('Your inventory is empty.')
+            print(BYELLOW+str(self.gold)+' gold.'+RESET)
 
         else: # counts qty/items and retrieve infos about them
             counter = collections.Counter(self.inventory)
@@ -246,6 +247,10 @@ class player():
             print('There is none to talk to here.')
             return False
 
+        elif self.host != '':
+            print('You are already talking to '+ BGREEN + self.host + RESET + ' at the moment.')
+            return False
+
         elif arg == '':
             print('Who do you want to talk to ? Type "look" to see present NPC(s)')
             return False
@@ -283,16 +288,116 @@ class player():
             self.host = ''
             return True
 
-    
+    def shop(self):
+        """Show host shop"""
+        stock = worldNpcs[self.host][STOCK]
+
+        if self.host == '':
+            print('You are not talking to anyone right now.')
+        
+        elif len(stock) > 0:
+            counter = collections.Counter(stock)
+            shop = []
+            for i in counter.keys():
+                shop.append([i, counter[i], worldItems[i][PRICE], worldItems[i][DESC]])
+            
+            print(INVERTED +BOLD + BGREEN +self.host+' shop :'+RESET)
+            headers = ('Name', 'Quantity', 'Price', 'Description')
+            print(columnar(shop, headers, no_borders=True))
+        
+        else:
+            print(BGREEN+self.host+RESET+'\'s shop is empty.')
 
     def sell(self, arg):
         """sell items to specific NPC."""
-        pass
+
+        if self.host != '':
+            if arg == '':
+                print ('What do you want to sell ?')
             
+            elif arg == 'all':
+                sold_items = []
+                for item in self.inventory:
+                    worldNpcs[self.host][STOCK].append(item)
+                    sold_items.append(item)
+                    self.gold += worldItems[item][PRICE]
+                    print(item +' sold for ' + BYELLOW + str(worldItems[item][PRICE]) + ' gold.' + RESET)
+                for item in sold_items:
+                    self.inventory.remove(item)
+            
+            else:
+               # transform input into list filled with items to sell
+                temp = ["".join(i) for i in arg]
+                # remove the last ',' from user input
+                if temp[-1] ==  ',' : temp.pop()
+                items = "".join(temp).split(', ') 
+
+                wrong_item = False
+                for item in items:
+                    try:
+                        self.inventory.remove(item)
+                        self.gold += worldItems[item][PRICE]
+                        worldNpcs[self.host][STOCK].append(item)
+                        print(item +' sold for ' + BYELLOW + str(worldItems[item][PRICE]) + ' gold.' + RESET)
+                    except:
+                        wrong_item = True
+                
+                if wrong_item:
+                    print('Some item do no exist or are not in your inventory.')
+        else:
+            print('You need to be talking to a NPC to sell items. Use "look" to see present NPCs.')
+        
     def buy(self, arg):
         """buy items to specific NPC."""
-        pass
 
+        if self.host != '':
+            if arg == '':
+                print ('What do you want to buy ? Use "shop" to see '+BGREEN+self.host+RESET+' \'s shop.')
 
+            elif arg == 'all':
+                bought_item = []
+                for item in worldNpcs[self.host][STOCK]:
+                    if self.gold >= worldItems[item][PRICE]:
+                        if worldItems[item][WEIGHT] <= (self.capacity-self.weight()):
+                            self.inventory.append(item)
+                            self.gold -= worldItems[item][PRICE]
+                            print(item+' bought for '+BYELLOW+str(worldItems[item][PRICE])+RESET+' gold.')
+                            bought_item.append(item)
+                        else:
+                            print(item+' exceeds your inventory capacity. Transaction cancelled.')
+                    else:
+                        print('You cannot buy '+item+'. You need '+BYELLOW+str(int(worldItems[item][PRICE])-self.gold)+' gold.'+RESET)
+                    
+                
+                for item in bought_item:
+                    worldNpcs[self.host][STOCK].remove(item)
+
+            else:
+                # transform input into list filled with items to sell
+                temp = ["".join(i) for i in arg]
+                # remove the last ',' from user input
+                if temp[-1] ==  ',' : temp.pop()
+                items = "".join(temp).split(', ') 
+
+                wrong_item = False
+                for item in items:
+                    try:
+                        if self.gold >= worldItems[item][PRICE]:
+                            if worldItems[item][WEIGHT] <= self.capacity - self.weight():
+                                worldNpcs[self.host][STOCK].remove(item)
+                                self.inventory.append(item)
+                                self.gold -= worldItems[item][PRICE]
+                                print(item+' bought for '+BYELLOW+str(worldItems[item][PRICE])+RESET+' gold.')
+                            else:
+                                print(item+' exceeds your inventory capacity. Transaction cancelled.')
+                        else:
+                            print('You cannot buy '+item+'. You need '+BYELLOW+str(int(worldItems[item][PRICE])-self.gold)+' gold.'+RESET)
+                    except:
+                        wrong_item = True
+                
+                if wrong_item:
+                    print('Some item(s) do no exist or are not in the shop.')
+
+                
     def weight(self):
         return sum(worldItems[item][WEIGHT] for item in self.inventory)
