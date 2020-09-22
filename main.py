@@ -15,17 +15,22 @@ user = player(15,30,'Home')
 
 class rpshellPrompt(cmd.Cmd):
 
-    prompt = BCYAN+worldRooms[user.location][REGION].upper()+'\u276D '+user.location+' \u232A '+ RESET
+    prompt = BCYAN+worldRooms[user.location][REGION].upper()+'\u276D '+user.location+' \u232A'+ RESET
 
 
     def default(self, arg):
         print('I do not know this command. Type "help" to list available commands.')
 
+
     def update_prompt(self, loc, npc):
         if npc == '' :
-            self.prompt = BCYAN+worldRooms[user.location][REGION].upper()+' \u276D '+ loc +' \u232A '+ RESET
+            self.prompt = BCYAN+worldRooms[user.location][REGION].upper()+' \u276D '+ loc +' \u232A'+ RESET
         else:
             self.prompt = BCYAN+worldRooms[user.location][REGION].upper()+' \u276D '+ loc +' \u232A'+ GREEN + npc + ' \u232A' + RESET
+    
+    def do_clear(self, arg):
+        """Clear terminal."""
+        os.system('clear')
 
     def do_east(self, arg):
         """Go east if possible."""
@@ -69,15 +74,8 @@ class rpshellPrompt(cmd.Cmd):
         
     def do_take(self, arg):
         """Put item(s) in player's inventory if possible.
-
-        Parameters
-        ----------
-        arg : item's names followed by comma, possibly one.
-
-        Use
-        ---
-        1. take [item 1], [item2], ... 
-        2. take all (put every item in your inventory)
+        -- take [item 1], [item2], ... 
+        -- take all (put every item in your inventory)
         """
         user.take(arg)
 
@@ -92,16 +90,9 @@ class rpshellPrompt(cmd.Cmd):
         return tuple(i+', ' for i in worldRooms[user.location][GROUND] if i.startswith(text))
 
     def do_drop(self, arg):
-        """You drop item(s) on the ground.
-
-        Parameters
-        ----------
-        arg : item's names followed by comma, possibly one.
-
-        Use
-        ---
-        1. drop [item 1], [item 2], ...
-        2. drop all (empty inventory)
+        """Drop item(s) on the ground.
+        -- drop [item 1], [item 2], ...
+        -- drop all (empty inventory)
         """
         user.drop(arg)
 
@@ -129,11 +120,7 @@ class rpshellPrompt(cmd.Cmd):
 
     def do_talk(self, arg):
         """Talk to a present NPC
-
-        Parameters
-        ----------
-        arg : str, npc's name
-
+        -- talk [NPC]
         """
         if user.talk(arg):
             self.update_prompt(user.location, arg)
@@ -147,7 +134,10 @@ class rpshellPrompt(cmd.Cmd):
         user.shop()
 
     def do_sell(self, arg):
-        """Player sells item to the NPC he is talking to."""
+        """Sell item to the NPC he is talking to.
+        -- sell [item1], [item2], ...
+        -- sell all (sell all item(s) you have)
+        """
         user.sell(arg)
 
     def complete_sell(self, text, line, begidx, endix):
@@ -155,15 +145,24 @@ class rpshellPrompt(cmd.Cmd):
         return tuple(i+', ' for i in user.inventory if i.startswith(text))
 
     def do_buy(self, arg):
-        """Player buys item to the NPC he is talking to."""
+        """Buy item(s) to the NPC you are talking to.
+        -- buy [item1], [item2], ...
+        -- buy all (buy every available items in the current shop)
+        """
         user.buy(arg)
 
     def complete_buy(self, text, line, begidx, endix):
         """Auto completion when player uses 'buy'"""
         return tuple(i+', ' for i in worldNpcs[user.host][STOCK] if i.startswith(text))
 
+    def do_use(self, arg):
+        """Equip with item if possible.
+        -- use [item1], [item2], ...
+        """
+        user.use(arg)
+
     def do_leave(self, arg):
-        """Player leaves conversation with NPC"""
+        """Leave conversation with NPC."""
         if user.leave():
             self.update_prompt(user.location, '')
 
@@ -172,5 +171,18 @@ class rpshellPrompt(cmd.Cmd):
         print('See you soon ! Thanks for playing.')
         return 1
 
-os.system('clear')
-rpshellPrompt().cmdloop()
+    # for shorter commands
+    do_i =  do_inv
+    do_l =  do_look
+    do_s = do_south
+    do_se = do_southeast
+    do_sw = do_southwest
+    do_n = do_north
+    do_ne = do_northeast
+    do_nw = do_northwest
+    do_e = do_east
+    do_w = do_west
+
+if __name__ == "__main__":
+    os.system('clear')
+    rpshellPrompt().cmdloop()

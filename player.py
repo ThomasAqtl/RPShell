@@ -173,6 +173,7 @@ class player():
         if direction in worldRooms[loc]:
             if worldRooms[loc][direction] in worldRooms:
                 self.location = worldRooms[loc][direction]
+                self.host = ''
                 print('You move', direction)
                 return True
             else:
@@ -247,9 +248,9 @@ class player():
             print('There is none to talk to here.')
             return False
 
-        elif self.host != '':
-            print('You are already talking to '+ BGREEN + self.host + RESET + ' at the moment.')
-            return False
+        # elif self.host != '':
+        #     print('You are already talking to '+ BGREEN + self.host + RESET + ' at the moment.')
+        #     return False
 
         elif arg == '':
             print('Who do you want to talk to ? Type "look" to see present NPC(s)')
@@ -258,14 +259,17 @@ class player():
         elif arg in worldRooms[self.location][NPC]:
             print(BOLD + BGREEN + arg + ' : ' + RESET + GREEN+ random.choice(worldNpcs[arg][WELCOME_LINE]) + RESET )
     
-            shop = []
-            for item in worldNpcs[arg][STOCK]:
-                shop.append([item, worldItems[item][PRICE], worldItems[item][DESC]])
+            if len(worldNpcs[arg][STOCK]) > 0:
+                shop = []
+                for item in worldNpcs[arg][STOCK]:
+                    shop.append([item, worldItems[item][PRICE], worldItems[item][DESC]])
+                
+                print(INVERTED +BOLD + BGREEN +arg+' shop :'+RESET)
+                headers = ('Name', 'Price', 'Description')
+                print(columnar(shop, headers, no_borders=True))
             
-            print(INVERTED +BOLD + BGREEN +arg+' shop :'+RESET)
-            headers = ('Name', 'Price', 'Description')
-            print(columnar(shop, headers, no_borders=True))
-
+            else:
+                print(BGREEN+arg+RESET+'\'s shop is empty.')
 
             # print player's inventory (to sell items)
             self.inv()
@@ -321,7 +325,7 @@ class player():
                     worldNpcs[self.host][STOCK].append(item)
                     sold_items.append(item)
                     self.gold += worldItems[item][PRICE]
-                    print(item +' sold for ' + BYELLOW + str(worldItems[item][PRICE]) + ' gold.' + RESET)
+                    print(item +' sold for ' + BYELLOW + str(worldItems[item][PRICE]) + ' gold.' + RESET + GREEN + '\u2191'+RESET)
                 for item in sold_items:
                     self.inventory.remove(item)
             
@@ -361,7 +365,7 @@ class player():
                         if worldItems[item][WEIGHT] <= (self.capacity-self.weight()):
                             self.inventory.append(item)
                             self.gold -= worldItems[item][PRICE]
-                            print(item+' bought for '+BYELLOW+str(worldItems[item][PRICE])+RESET+' gold.')
+                            print(item+' bought for '+BYELLOW+str(worldItems[item][PRICE])+' gold.'+ RED + MINUS + RESET)
                             bought_item.append(item)
                         else:
                             print(item+' exceeds your inventory capacity. Transaction cancelled.')
@@ -397,7 +401,13 @@ class player():
                 
                 if wrong_item:
                     print('Some item(s) do no exist or are not in the shop.')
+        else:
+            print('You need to be talking to a NPC to buy items. Use "look" to see present NPCs.')
 
                 
     def weight(self):
         return sum(worldItems[item][WEIGHT] for item in self.inventory)
+
+    # TODO implement stuff and gears
+    # def use(arg):
+    #     pass

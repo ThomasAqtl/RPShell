@@ -40,6 +40,8 @@ WELCOME_LINE = "welcome_line"
 BYE_LINE =  "bye_line"
 NPC =  "npc"
 
+MOBS = 'mobs'
+
 SCREEN_WIDTH = 80
 
 # key word for special characters and colors
@@ -58,6 +60,15 @@ BMAGENTA = MAGENTA.replace('m',';1m')
 
 GREEN = '\u001b[32m'
 BGREEN = GREEN.replace('m',';1m')
+
+RED = '\u001b[31m'
+BRED = RED.replace('m',';1m')
+
+GREY = '\u001b[30m'
+BGREY = GREY.replace('m',';1m')
+
+PLUS = '\u2191'
+MINUS = '\u2193'
 
 HP = '\u25AA'
 MHP = '\u25AB' # Missing HP

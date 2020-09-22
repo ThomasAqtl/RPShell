@@ -1,4 +1,4 @@
-from Const import TAKEABLE, TRADABLE, DAMAGE, PRICE, LVL, WEIGHT, USABLE, EATABLE, GROUNDDESC, DESC, HEAL
+from Const import *
 
 worldItems = {
         'Basic steel sword' : {

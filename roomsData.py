@@ -10,6 +10,7 @@ worldRooms = {
             SOUTH : 'Easten street of Homeland',
             REGION : 'White Mountains',
             NPC : ['Oliver'],
+            MOBS : ['Tiger']
             },
 
         'My garden' : {
