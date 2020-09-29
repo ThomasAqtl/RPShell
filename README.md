@@ -32,8 +32,8 @@ The command prompt always appears as follow :
 
 Some additionnal libraries have to be installed to run the game. This list **is still to be updated**.
 
-- columnar :
-    
-      $ pip3 install columnar
+- columnar :  
+
+        $ pip3 install columnar
 
 </div>
