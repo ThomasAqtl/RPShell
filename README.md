@@ -28,12 +28,9 @@ The command prompt always appears as follow :
  and is updated whenever needed. </div>
 
  ## Additionnal libraries
-<div style="text-align; justify>
 
 Some additionnal libraries have to be installed to run the game. This list **is still to be updated**.
 
 - columnar :  
 
         $ pip3 install columnar
-
-</div>
