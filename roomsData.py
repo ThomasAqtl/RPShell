@@ -5,12 +5,12 @@ worldRooms = {
             DESC : 'This is my home.',
             SHORTDESC : 'home',
             LONGDESC : 'This is my home. There is a welcome sign on the top of the door. It reads "Please knock if I do not know you".',
-            GROUND : ['Basic steel sword', 'Health potion', 'Health potion'],
+            GROUND : ['Basic steel sword'],
             NORTH : 'My garden',
             SOUTH : 'Easten street of Homeland',
             REGION : 'White Mountains',
             NPC : ['Oliver'],
-            MOBS : ['Tiger']
+            MOBS : ['Tiger'],
             },
 
         'My garden' : {
@@ -19,6 +19,6 @@ worldRooms = {
             NORTH : 'Nothing important',
             SOUTH : 'Home',
             REGION : 'White Mountains',
-            NPC : ['Bob', 'Emma']
+            NPC : ['Bob', 'Emma'],
             },
         }

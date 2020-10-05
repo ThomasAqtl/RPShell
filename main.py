@@ -8,6 +8,7 @@ import os
 
 from player import player, worldNpcs
 from roomsData import *
+from ItemsData import *
 
 
 user = player(15,30,'Home')
@@ -29,7 +30,7 @@ class rpshellPrompt(cmd.Cmd):
             self.prompt = BCYAN+worldRooms[user.location][REGION].upper()+' \u276D '+ loc +' \u232A'+ GREEN + npc + ' \u232A' + RESET
     
     def do_clear(self, arg):
-        """Clear terminal."""
+        """Clear console."""
         os.system('clear')
 
     def do_east(self, arg):
@@ -73,7 +74,7 @@ class rpshellPrompt(cmd.Cmd):
             self.update_prompt(user.location, '')
         
     def do_take(self, arg):
-        """Put item(s) in player's inventory if possible.
+        """Put given item(s) in your inventory if possible.
         -- take [item 1], [item2], ... 
         -- take all (put every item in your inventory)
         """
@@ -90,7 +91,7 @@ class rpshellPrompt(cmd.Cmd):
         return tuple(i+', ' for i in worldRooms[user.location][GROUND] if i.startswith(text))
 
     def do_drop(self, arg):
-        """Drop item(s) on the ground.
+        """Drop given item(s) on the ground.
         -- drop [item 1], [item 2], ...
         -- drop all (empty inventory)
         """
@@ -107,19 +108,19 @@ class rpshellPrompt(cmd.Cmd):
         return tuple(i+', ' for i in user.inventory if i.startswith(text))
 
     def do_hp(self, arg):
-        """Display player's health points"""
+        """Display your health points"""
         user.showHp()
     
     def do_look(self, arg):
         """Display info about current location."""
-        user.displayLoc()
+        user.look()
 
     def do_inv(self, arg):
         """Shows your inventory."""
         user.inv()
 
     def do_talk(self, arg):
-        """Talk to a present NPC
+        """Talk to a present NPC.
         -- talk [NPC]
         """
         if user.talk(arg):
@@ -134,7 +135,7 @@ class rpshellPrompt(cmd.Cmd):
         user.shop()
 
     def do_sell(self, arg):
-        """Sell item to the NPC he is talking to.
+        """Sell item(s) to the NPC you are talking to.
         -- sell [item1], [item2], ...
         -- sell all (sell all item(s) you have)
         """
@@ -155,11 +156,15 @@ class rpshellPrompt(cmd.Cmd):
         """Auto completion when player uses 'buy'"""
         return tuple(i+', ' for i in worldNpcs[user.host][STOCK] if i.startswith(text))
 
-    def do_use(self, arg):
-        """Equip with item if possible.
+    def do_equip(self, arg):
+        """Equip yourself with item(s) if possible.
         -- use [item1], [item2], ...
         """
-        user.use(arg)
+        user.equip(arg)
+
+    def complete_equip(self, text, line, begidx, endix):
+        """Auto completion when player uses 'equip'"""
+        return tuple(i+', ' for i in user.inventory if i.startswith(text) and worldItems[i][TYPE]=='Weapon' or worldItems[i][TYPE]=='Panoply')
 
     def do_leave(self, arg):
         """Leave conversation with NPC."""

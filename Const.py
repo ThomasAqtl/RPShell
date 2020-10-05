@@ -25,7 +25,7 @@ HURT = 'hurt'
 STRENGHTEN = 'strenghten'
 WEAKEN = 'weaken'
 
-EATABLE = 'eatable' # items that can be eaten
+CONSUMABLE = 'consumable' # items that can be eaten
 TAKEABLE = 'takeable' # items that can be placed in player's inventory
 USABLE = 'usable' # for items that can be used as an equipments and not 'consumed'
 TRADABLE = 'tradable' # form items that can be sold or not

@@ -1,4 +1,5 @@
 from ItemsData import *
+from item import *
 from roomsData import *
 from npcData import *
 from columnar import columnar
@@ -16,6 +17,8 @@ class player():
         self.location = location
         self.gold = 50
         self.host = ''
+        self.weapon = ''
+        self.panoply = ''
 
     def heal(self, amount):
         """Deals [amount] hp"""
@@ -183,7 +186,7 @@ class player():
             print('You cannot go', direction)
             return False
 
-    def displayLoc(self):
+    def look(self):
         """Display infos about the current location : current room description,
         takeable items, present npcs and possible exits."""
 
@@ -201,11 +204,14 @@ class player():
             print(INVERTED+BOLD+'TAKEABLE ITEMS :'+RESET)
             try:
                 L = []
-                ground = worldRooms[self.location][GROUND]
+                ground = worldRooms[loc][GROUND]
                 if len(ground) > 0:
                     for item in ground:
                         l = []
-                        l.extend([item, worldItems[item][GROUNDDESC]])
+                        arg = [j for j in worldItems[item].values()]
+                        print(item, arg)
+                        i = item(*(str(item), tuple(arg)))
+                        l.append(i)
                         L.append(l)
                 headers = ['Name', 'Description']
                 print(columnar(L, headers, no_borders=True))
@@ -216,7 +222,7 @@ class player():
             print(INVERTED+BOLD+'PRESENT NPC(S) :'+RESET)
             try:
                 L = []
-                npcs = worldRooms[self.location][NPC]
+                npcs = worldRooms[loc][NPC]
                 if len(npcs) > 0:
                     for npc in npcs:
                         l = []
@@ -246,6 +252,10 @@ class player():
         # check if npc are present in the room
         if len(worldRooms[self.location][NPC]) == 0:
             print('There is none to talk to here.')
+            return False
+        
+        elif arg not in worldNpcs.keys():
+            print('[INFO] This NPC is not configured yet.')
             return False
 
         # elif self.host != '':
@@ -404,10 +414,26 @@ class player():
         else:
             print('You need to be talking to a NPC to buy items. Use "look" to see present NPCs.')
 
-                
+
+    def equip(self, arg):
+        
+        if arg == '':
+            print('What do you want to equip ? Use "inv" to see your inventory.')
+        
+        elif arg not in self.inventory:
+            print('The item you want to equip is not in your inventory or does not exist.')
+        
+        else:
+            try:
+                if worldItems[arg][TYPE] == 'Weapon':
+                    self.weapon = arg
+                    self.inventory.remove(arg)
+                elif worldItems[arg][TYPE] == 'Panoply':
+                    self.panoply = arg
+                    self.inventory.remove(arg)
+            except:
+                print('You cannot equip this item.')
+
+              
     def weight(self):
         return sum(worldItems[item][WEIGHT] for item in self.inventory)
-
-    # TODO implement stuff and gears
-    # def use(arg):
-    #     pass
