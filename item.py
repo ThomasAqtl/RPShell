@@ -2,61 +2,50 @@ from ItemsData import *
 
 class item():
 
-    def __init__(self, name: str, desc: str, grounddesc: str, weight: int, consumable: bool, usable: bool):
-        self.name = name
-        self.desc = desc
-        self.grounddesc = grounddesc
-        self.weight = weight
-        self.consumable = consumable
-        self.usable = usable
+    def __init__(self, name: str, **kwargs: dict):
 
-    def __str__(self):
-        print('NAME : ', self.name)
-        print('DESC : ', self.desc)
-        print('WEIGHT : ', self.weight)
-        print('CONSUMABLE : ', self.consumable)
-        print('USABLE : ', self.usable)
+        # regular parameters
+        self.name = name
+        self.desc = kwargs.get(DESC)
+        self.grounddesc = kwargs.get(GROUNDDESC)
+        self.weight = kwargs.get(WEIGHT)
+
+        # optionnal parameters, depend on the item
+        if CONSUMABLE in kwargs:
+            self.consumable = kwargs.get(CONSUMABLE)
+        else:
+            self.consumable = False
+
+        if USABLE in kwargs:
+            self.usable = kwargs.get(USABLE)
+        else:
+            self.usable =  False
+
+        if DAMAGE in kwargs:
+            self.damage = kwargs.get(DAMAGE)
+        
+        if DEFENSE in kwargs:
+            self.defense = kwargs.get(DEFENSE)
+        
+        if LVL in kwargs:
+            self.lvl = kwargs.get(LVL)
+
+        if SELL_PRICE in kwargs:
+            self.sell_price = kwargs.get(SELL_PRICE)
+        
+        if BUY_PRICE in kwargs:
+            self.buy_price = kwargs.get(BUY_PRICE)
+
+        if TYPE in kwargs:
+            self.type = kwargs.get(TYPE)
+
+    # return the name of the item after printing info about it
+    def __str__(self) -> str:
         return self.name
 
-class weapon(item):
+    # the name of the item is unique (i.e. different stats => different item)
+    def __eq__(self, other) -> bool:
+        return self.name == other.name
 
-    def __init__(self, name: str, desc: str, grounddesc: str, weight: int, damage: int, lvl: int):
-        self.name = name
-        self.desc = desc
-        self.grounddesc = grounddesc
-        self.weight = weight
-        self.consumable = False
-        self.usable =  True
-        self.damage = damage
-        self.lvl = lvl
-
-class panoply(item):
-
-    def __init__(self, name: str, desc: str, grounddesc: str, weight: int, defense: int, lvl: int):
-        self.name = name
-        self.desc = desc
-        self.grounddesc = grounddesc
-        self.weight = weight
-        self.consumable = False
-        self.usable =  True
-        self.defense = defense
-        self.lvl = lvl
-
-class potion(item):
-
-    def __init__(self, name: str, desc: str, weight: int):
-        self.name = name
-        self.desc = desc
-        self.weight = weight
-        self.consumable = True
-        self.usable = False
-
-def main():
-    arg = [i for i in worldItems['Basic steel sword'].values()]
-    item2 = weapon('Basic steel sword', *arg)
-
-    print(item2)
-
-
-if __name__ == "__main__":
-    main()
+    def __hash__(self):
+        return hash((self.name))
