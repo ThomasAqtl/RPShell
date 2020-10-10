@@ -105,7 +105,7 @@ class rpshellPrompt(cmd.Cmd):
         text : whole line including 'take'
         line : all that comes after 'take'
         """
-        return tuple(i+', ' for i in user.inventory if i.startswith(text))
+        return tuple(i.name+', ' for i in user.inventory if i.name.startswith(text))
 
     def do_hp(self, arg):
         """Display your health points"""
@@ -143,7 +143,7 @@ class rpshellPrompt(cmd.Cmd):
 
     def complete_sell(self, text, line, begidx, endix):
         """Auto compeltion when player uses 'sell'"""
-        return tuple(i+', ' for i in user.inventory if i.startswith(text))
+        return tuple(i.name+', ' for i in user.inventory if i.name.startswith(text))
 
     def do_buy(self, arg):
         """Buy item(s) to the NPC you are talking to.
@@ -158,13 +158,14 @@ class rpshellPrompt(cmd.Cmd):
 
     def do_equip(self, arg):
         """Equip yourself with item(s) if possible.
-        -- use [item1], [item2], ...
+        -- equip [item1], [item2], ...
         """
         user.equip(arg)
 
     def complete_equip(self, text, line, begidx, endix):
         """Auto completion when player uses 'equip'"""
-        return tuple(i+', ' for i in user.inventory if i.startswith(text) and worldItems[i][TYPE]=='Weapon' or worldItems[i][TYPE]=='Panoply')
+        return tuple(i.name+', ' for i in user.inventory if i.type == 'Weapon' \
+            or i.type == 'Panoply')
 
     def do_leave(self, arg):
         """Leave conversation with NPC."""
