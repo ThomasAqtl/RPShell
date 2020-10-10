@@ -17,17 +17,21 @@ class player():
         self.location = location
         self.gold = 50
         self.host = ''
-        self.weapon = ''
-        self.panoply = ''
+        self.weapon = None
+        self.panoply = None
 
-    def heal(self, amount):
-        """Deals [amount] hp"""
+    def heal(self, amount: int):
+        """
+        Parameters
+        ----------
+        amount : int
+        """
         print('You heal yourself {0} hp. '.format(amount), end="")
         self.hp()
         self.hp = min(self.hpmax,self.hp + amount)
 
     def suffer(self, amount):
-        """Deal [amount] damages"""
+        """Lose <amount> hp."""
         self.hp = max(0, self.hp - amount)
         if self.hp == 0:
             print('You died !')
@@ -41,58 +45,54 @@ class player():
         print('Health : ',HP * self.hp,MHP * (self.hpmax-self.hp),' ',self.hp,'/',self.hpmax, sep='')
 
     
-    def take(self, arg):
+    def take(self, arg): # FUNCTIONNAL
         """
         Parameters 
         ----------
         arg : list of items to take, possibly one element
         """
-        if len(worldRooms[self.location][GROUND]) == 0:
-            print('There is no item to take here.')
+        try:
+            if len(worldRooms[self.location][GROUND]) == 0:
+                print('There is no item to take here.')
 
-        else:
-            # if no arguments
-            if arg == '':
-                print('What do your want to take ? type "look" to see what is on the ground.')
-
-            elif arg == 'all':
-                old_ground = []
-                for item in worldRooms[self.location][GROUND]:
-                    if self.weight() + worldItems[item][WEIGHT] <= self.capacity:
-                        self.inventory.append(item)
-                        old_ground.append(item)
-                        print(item, ' added to your inventory.')
-                    else:
-                        print('Your inventory is full !')
-                for item in old_ground:
-                    worldRooms[self.location][GROUND].remove(item) 
-                        
             else:
-                # transform input into list filled with items to take
-                temp = ["".join(i) for i in arg]
-                # remove the last ',' from user input
-                if temp[-1] ==  ',' : temp.pop()
-                items = "".join(temp).split(', ')
+                # if no arguments
+                if arg == '':
+                    print('What do you want to take ? type "look" to see what is on the ground.')
 
-                old_ground = []
-                wrong_item = False
-                for item in items:
-                    try:
-                        if worldItems[item][WEIGHT] + self.weight() <= self.capacity:
-                            self.inventory.append(item)
-                            old_ground.append(item)
-                            worldRooms[self.location][GROUND].remove(item)
-                            print(item, 'added to your inventory.')
+                elif arg == 'all':
+                    old_ground = []
+                    for i in worldRooms[self.location][GROUND]:
+                        if self.weight() + worldItems[i][WEIGHT] <= self.capacity:
+                            taken_item = item(i, **worldItems[i])
+                            self.inventory.append(taken_item)
+                            old_ground.append(taken_item)
+                            print(i, 'added to your inventory.')
                         else:
                             print('Your inventory is full !')
-                            return
-                    except:
-                        wrong_item =  True
-                
-                if wrong_item:
-                    print('\nSome items do not exists or are not in the room.')
-            
-                                    
+                    for i in old_ground:
+                        worldRooms[self.location][GROUND].remove(i.name) 
+                            
+                else:
+                    # transform input into list filled with items to take
+                    temp = ["".join(i) for i in arg]
+                    if temp[-1] ==  ',' : temp.pop() # remove the last automatic',' from user input
+                    items_to_take_names = "".join(temp).split(', ')
+
+                    for i in items_to_take_names:
+                        try:
+                            if worldItems[i][WEIGHT] + self.weight() <= self.capacity:
+                                self.inventory.append(item(i, **worldItems[i]))
+                                worldRooms[self.location][GROUND].remove(i)
+                                print(i, 'added to your inventory.')
+                            else:
+                                print('Your inventory is full !')
+                                return
+                        except:
+                            print('\nSome items do not exist or are not in the room.')
+        except:
+            print('There is no item to take here.') # in case no GROUND key in the dictionnary
+
     def drop(self, arg):
         """Remove items from the inventory and leave them on the current room's ground"""
         if (len(self.inventory)) ==  0:
@@ -102,8 +102,8 @@ class player():
                 print('What do you want to drop ?')
 
             elif arg ==  'all':
-                for item in self.inventory:
-                    worldRooms[self.location][GROUND].append(item)
+                for i in self.inventory:
+                    worldRooms[self.location][GROUND].append(i.name)
                 self.inventory.clear()
                 print('You have emptied your bag on the ground.')
 
@@ -111,16 +111,16 @@ class player():
                 # transform input into list filled with items to take
                 temp = ["".join(i) for i in arg]
                 if temp[-1] ==  ',' : temp.pop() # remove the last ',' from user input
-                items = "".join(temp).split(', ')
-
-                for item in items:
+                items_to_drop_names = "".join(temp).split(', ')
+                
+                for i in items_to_drop_names:
                     try:
-                        self.inventory.remove(item)
-                        worldRooms[self.location][GROUND].append(item)
-                        print('You dropped', item)
+                        item_to_drop = item(i, **worldItems[i])
+                        self.inventory.remove(item_to_drop)
+                        worldRooms[self.location][GROUND].append(item_to_drop.name)
+                        print(i, 'dropped.')
                     except:
-                        print('You do not have this item. Use <inv> to see your inventory.')
-                        return
+                        print(i, 'is not in your inventory.')
         
     
     def inv(self):
@@ -140,11 +140,11 @@ class player():
                 l = []
                 l.append(i)
                 l.append(counter[i])
-                l.append(worldItems[i][PRICE])
-                l.append(worldItems[i][WEIGHT])
-                l.append(worldItems[i][DESC])
-                weight.append(worldItems[i][WEIGHT])
-                prices.append(worldItems[i][PRICE])
+                l.append(i.sell_price)
+                l.append(i.weight)
+                l.append(i.desc)
+                weight.append(i.weight)
+                prices.append(i.sell_price)
                 L.append(l)
             
             # Sums prices and weight for total, and max for capacity. 
@@ -152,14 +152,14 @@ class player():
             L.append(['MAX', 'N/A', 'N/A', self.capacity, 'N/A'])
 
             # Better display
-            headers = ['Name', 'Quantity', 'Unit price', 'Weight', 'About']
+            headers = ['Name', 'Quantity', 'Sell price', 'Weight', 'Description']
             L.insert(1, ['-'*len(headers[i]) for i in range(len(headers))])
             L.insert(len(set(self.inventory))+2, ['='*len(headers[i]) for i in range(len(headers))])
             L.insert(len(L)-1, ['='*len(headers[i]) for i in range(len(headers))])
             print(INVERTED+BOLD+'INVENTORY :'+RESET)
             print(columnar(L, headers, no_borders=True, justify=['l','r','r','r','l']))
 
-    def move(self, direction):
+    def move(self, direction: str) -> bool:
         """If possible, moves the player to an adjacent location according to parameter
         
         Parameters
@@ -206,15 +206,13 @@ class player():
                 L = []
                 ground = worldRooms[loc][GROUND]
                 if len(ground) > 0:
-                    for item in ground:
+                    for items in ground:
                         l = []
-                        arg = [j for j in worldItems[item].values()]
-                        print(item, arg)
-                        i = item(*(str(item), tuple(arg)))
-                        l.append(i)
+                        i = item(items, **worldItems[items])
+                        l.extend([i, i.grounddesc])
                         L.append(l)
                 headers = ['Name', 'Description']
-                print(columnar(L, headers, no_borders=True))
+                print(columnar(L, headers, no_borders=True, justify=['r','l']))
             except:
                 print('None\n')
 
@@ -254,14 +252,6 @@ class player():
             print('There is none to talk to here.')
             return False
         
-        elif arg not in worldNpcs.keys():
-            print('[INFO] This NPC is not configured yet.')
-            return False
-
-        # elif self.host != '':
-        #     print('You are already talking to '+ BGREEN + self.host + RESET + ' at the moment.')
-        #     return False
-
         elif arg == '':
             print('Who do you want to talk to ? Type "look" to see present NPC(s)')
             return False
@@ -272,7 +262,7 @@ class player():
             if len(worldNpcs[arg][STOCK]) > 0:
                 shop = []
                 for item in worldNpcs[arg][STOCK]:
-                    shop.append([item, worldItems[item][PRICE], worldItems[item][DESC]])
+                    shop.append([item, worldItems[item][BUY_PRICE], worldItems[item][DESC]])
                 
                 print(INVERTED +BOLD + BGREEN +arg+' shop :'+RESET)
                 headers = ('Name', 'Price', 'Description')
@@ -310,13 +300,12 @@ class player():
             print('You are not talking to anyone right now.')
         
         elif len(stock) > 0:
-            counter = collections.Counter(stock)
             shop = []
-            for i in counter.keys():
-                shop.append([i, counter[i], worldItems[i][PRICE], worldItems[i][DESC]])
+            for i in stock:
+                shop.append([i, worldItems[i][BUY_PRICE], worldItems[i][DESC]])
             
-            print(INVERTED +BOLD + BGREEN +self.host+' shop :'+RESET)
-            headers = ('Name', 'Quantity', 'Price', 'Description')
+            print(INVERTED +BOLD + BGREEN + self.host +' shop :'+RESET)
+            headers = ('Name', 'Price', 'Description')
             print(columnar(shop, headers, no_borders=True))
         
         else:
@@ -331,109 +320,116 @@ class player():
             
             elif arg == 'all':
                 sold_items = []
-                for item in self.inventory:
-                    worldNpcs[self.host][STOCK].append(item)
-                    sold_items.append(item)
-                    self.gold += worldItems[item][PRICE]
-                    print(item +' sold for ' + BYELLOW + str(worldItems[item][PRICE]) + ' gold.' + RESET + GREEN + '\u2191'+RESET)
-                for item in sold_items:
-                    self.inventory.remove(item)
+                for i in self.inventory:
+                    worldNpcs[self.host][STOCK].append(i.name)
+                    sold_items.append(i)
+                    self.gold += worldItems[i.name][SELL_PRICE]
+                    print(i.name +' sold for ' + BYELLOW + str(worldItems[i.name][SELL_PRICE]) + \
+                        ' gold.' + RESET + GREEN + PLUS +RESET)
+                for i in sold_items:
+                    self.inventory.remove(i)
             
             else:
-               # transform input into list filled with items to sell
+                # lines 334 -> 335 transform input into list filled with items' names
                 temp = ["".join(i) for i in arg]
-                # remove the last ',' from user input
-                if temp[-1] ==  ',' : temp.pop()
-                items = "".join(temp).split(', ') 
-
-                wrong_item = False
-                for item in items:
-                    try:
-                        self.inventory.remove(item)
-                        self.gold += worldItems[item][PRICE]
-                        worldNpcs[self.host][STOCK].append(item)
-                        print(item +' sold for ' + BYELLOW + str(worldItems[item][PRICE]) + ' gold.' + RESET)
-                    except:
-                        wrong_item = True
+                if temp[-1] ==  ',' : temp.pop() # remove the last ',' from user input
+                items_to_sell_names = "".join(temp).split(', ') 
                 
-                if wrong_item:
-                    print('Some item do no exist or are not in your inventory.')
+                for i in items_to_sell_names:
+                    try:
+                        item_to_sell = item(i, **worldItems[i])
+                        self.inventory.remove(item_to_sell)
+                        worldNpcs[self.host][STOCK].append(item_to_sell.name)
+                        self.gold += worldItems[i][SELL_PRICE]
+                        print(i +' sold for ' + BYELLOW + str(worldItems[i][SELL_PRICE]) +\
+                             ' gold.' + RESET + GREEN + PLUS + RESET)
+                    except:
+                        print(i, 'is not in your inventory.')
         else:
             print('You need to be talking to a NPC to sell items. Use "look" to see present NPCs.')
         
     def buy(self, arg):
         """buy items to specific NPC."""
-
         if self.host != '':
             if arg == '':
                 print ('What do you want to buy ? Use "shop" to see '+BGREEN+self.host+RESET+' \'s shop.')
-
+            
             elif arg == 'all':
-                bought_item = []
-                for item in worldNpcs[self.host][STOCK]:
-                    if self.gold >= worldItems[item][PRICE]:
-                        if worldItems[item][WEIGHT] <= (self.capacity-self.weight()):
-                            self.inventory.append(item)
-                            self.gold -= worldItems[item][PRICE]
-                            print(item+' bought for '+BYELLOW+str(worldItems[item][PRICE])+' gold.'+ RED + MINUS + RESET)
-                            bought_item.append(item)
+                items_to_buy_names = []
+                for i in worldNpcs[self.host][STOCK]:
+                    if worldItems[i][BUY_PRICE] <= self.gold:
+                        if worldItems[i][WEIGHT] + self.weight() <= self.capacity:
+                            self.inventory.append(item(i, **worldItems[i]))
+                            items_to_buy_names.append(i)
+                            self.gold -= worldItems[i][BUY_PRICE]
+                            print(i + ' bought for ' + BYELLOW + str(worldItems[i][BUY_PRICE]) + ' gold.' 
+                            + RESET + RED + MINUS + RESET )
                         else:
-                            print(item+' exceeds your inventory capacity. Transaction cancelled.')
+                            print(i, 'is too heavy. You cannot buy it.')
                     else:
-                        print('You cannot buy '+item+'. You need '+BYELLOW+str(int(worldItems[item][PRICE])-self.gold)+' gold.'+RESET)
-                    
+                        print(i, 'is too expensive. You need', worldItems[i][BUY_PRICE] - self.gold, 'more gold to buy it.')
                 
-                for item in bought_item:
-                    worldNpcs[self.host][STOCK].remove(item)
+                for i in items_to_buy_names:
+                    worldNpcs[self.host][STOCK].remove(i)
 
             else:
-                # transform input into list filled with items to sell
+                # lines 378 -> 380 transform input into list filled with items' names
                 temp = ["".join(i) for i in arg]
-                # remove the last ',' from user input
-                if temp[-1] ==  ',' : temp.pop()
-                items = "".join(temp).split(', ') 
+                if temp[-1] ==  ',' : temp.pop() # remove the last ',' from user input
+                items_to_buy_names = "".join(temp).split(', ') 
 
-                wrong_item = False
-                for item in items:
-                    try:
-                        if self.gold >= worldItems[item][PRICE]:
-                            if worldItems[item][WEIGHT] <= self.capacity - self.weight():
-                                worldNpcs[self.host][STOCK].remove(item)
-                                self.inventory.append(item)
-                                self.gold -= worldItems[item][PRICE]
-                                print(item+' bought for '+BYELLOW+str(worldItems[item][PRICE])+RESET+' gold.')
+                for i in items_to_buy_names:
+                    #try:
+                        if self.gold >= worldItems[i][BUY_PRICE]:
+                            if worldItems[i][WEIGHT] <= self.capacity - self.weight():
+                                worldNpcs[self.host][STOCK].remove(i)
+                                self.inventory.append(item(i, **worldItems[i]))
+                                self.gold -= worldItems[i][BUY_PRICE]
+                                print(i+' bought for '+BYELLOW+str(worldItems[i][BUY_PRICE])+' gold.'+RESET+RED+MINUS+RESET)
                             else:
-                                print(item+' exceeds your inventory capacity. Transaction cancelled.')
+                                print(i+' exceeds your inventory capacity. Transaction cancelled.')
                         else:
-                            print('You cannot buy '+item+'. You need '+BYELLOW+str(int(worldItems[item][PRICE])-self.gold)+' gold.'+RESET)
-                    except:
-                        wrong_item = True
-                
-                if wrong_item:
-                    print('Some item(s) do no exist or are not in the shop.')
+                            print('You cannot buy '+i+'. You need '+BYELLOW+str(int(worldItems[i][BUY_PRICE])-self.gold)+' gold.'+RESET)
+                   # except:
+                    #    print('Some item(s) do no exist or are not in the shop.')
         else:
             print('You need to be talking to a NPC to buy items. Use "look" to see present NPCs.')
 
 
-    def equip(self, arg):
+    def equip(self, arg: item):
         
         if arg == '':
             print('What do you want to equip ? Use "inv" to see your inventory.')
         
-        elif arg not in self.inventory:
-            print('The item you want to equip is not in your inventory or does not exist.')
-        
         else:
             try:
-                if worldItems[arg][TYPE] == 'Weapon':
-                    self.weapon = arg
-                    self.inventory.remove(arg)
-                elif worldItems[arg][TYPE] == 'Panoply':
-                    self.panoply = arg
-                    self.inventory.remove(arg)
-            except:
-                print('You cannot equip this item.')
+                # lines 408 -> 412 transform input into list filled with items (objects) to equip
+                temp = ["".join(i) for i in arg]
+                if temp[-1] ==  ',' : temp.pop() # remove the last comma from user input
+                items_name = "".join(temp).split(', ') 
+                items_to_equip = [item(i, **worldItems[i]) for i in items_name]
 
+                for i in items_to_equip: 
+                    if worldItems[i.name][TYPE] == 'Weapon':
+                        self.weapon = i
+                        self.inventory.remove(i)
+                    elif worldItems[i.name][TYPE] == 'Panoply':
+                        self.panoply = i
+                        self.inventory.remove(i)
+                    else:
+                        print(i, 'cannot be equiped.')
+                    print(i, 'equiped.')
+            except:
+                print('Some item(s) do not exist.')
+
+    # TODO stuff method (not finished)
+    def stuff(self):
+        """Show items that are currently equiped."""
+        if self.weapon == None and self.panoply == None:
+            print('You do not have any equipment right now.')
+        else:
+            pass
+            
               
     def weight(self):
-        return sum(worldItems[item][WEIGHT] for item in self.inventory)
+        return sum(i.weight for i in self.inventory)
