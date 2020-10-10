@@ -16,30 +16,31 @@ SOUTHEAST = 'southeast'
 SOUTHWEST = 'southwest'
 REGION = 'region'
 
-DAMAGE = 'damage' # specs for weapons
+# specs for weapons
+DAMAGE = 'damage' 
+DEFENSE = 'defense'
 LVL = 'lvl' 
 
 # key words for consumable effects
 HEAL = 'heal'
 HURT = 'hurt'
-STRENGHTEN = 'strenghten'
-WEAKEN = 'weaken'
 
+# key words 
 CONSUMABLE = 'consumable' # items that can be eaten
 TAKEABLE = 'takeable' # items that can be placed in player's inventory
 USABLE = 'usable' # for items that can be used as an equipments and not 'consumed'
 TRADABLE = 'tradable' # form items that can be sold or not
-PRICE = 'price'
+SELL_PRICE = 'sell_price'
+BUY_PRICE = 'buy_price'
 WEIGHT = 'weight'
 
 # key words for npcs
-TYPE = "type"
-STOCK = "stock"
-WALLET = "wallet"
-WELCOME_LINE = "welcome_line"
-BYE_LINE =  "bye_line"
-NPC =  "npc"
-
+TYPE = 'type'
+STOCK = 'stock'
+WALLET = 'wallet'
+WELCOME_LINE = 'welcome_line'
+BYE_LINE =  'bye_line'
+NPC =  'npc'
 MOBS = 'mobs'
 
 SCREEN_WIDTH = 80

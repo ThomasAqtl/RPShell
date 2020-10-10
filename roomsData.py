@@ -5,7 +5,7 @@ worldRooms = {
             DESC : 'This is my home.',
             SHORTDESC : 'home',
             LONGDESC : 'This is my home. There is a welcome sign on the top of the door. It reads "Please knock if I do not know you".',
-            GROUND : ['Basic steel sword'],
+            GROUND : ['Basic steel sword', 'Health potion', 'Health potion'],
             NORTH : 'My garden',
             SOUTH : 'Easten street of Homeland',
             REGION : 'White Mountains',
