@@ -396,8 +396,25 @@ class player():
             print('You need to be talking to a NPC to buy items. Use "look" to see present NPCs.')
 
 
+    def stuff(self):
+        if self.weapon is None and self.panoply is None:
+            print('You do not have any equipment at the moment.')
+
+        else:
+            L = list()
+            if self.weapon is not None:
+                l1 = list()
+                l1.extend(['WEAPON', self.weapon.name, worldItems[self.weapon.name][DAMAGE], 'N/A', worldItems[self.weapon.name][DESC]])
+                L.append(l1)
+            if self.panoply is not None:
+                l2 = list()
+                l2.extend(['PANOPLY', self.panoply.name, 'N/A', worldItems[self.panoply.name][DEFENSE], worldItems[self.panoply.name][DESC]])
+                L.append(l2)
+
+            headers = ['TYPE', 'NAME', 'DAMAGE', 'DEFENSE', 'ABOUT']
+            print(columnar(L, headers, no_borders=True))
+
     def equip(self, arg: item):
-        
         if arg == '':
             print('What do you want to equip ? Use "inv" to see your inventory.')
         
@@ -413,23 +430,54 @@ class player():
                     if worldItems[i.name][TYPE] == 'Weapon':
                         self.weapon = i
                         self.inventory.remove(i)
+                        print(i, 'equiped.')
                     elif worldItems[i.name][TYPE] == 'Panoply':
                         self.panoply = i
                         self.inventory.remove(i)
+                        print(i, 'equiped.')
                     else:
                         print(i, 'cannot be equiped.')
-                    print(i, 'equiped.')
+                    
             except:
                 print('Some item(s) do not exist.')
 
-    # TODO stuff method (not finished)
-    def stuff(self):
-        """Show items that are currently equiped."""
-        if self.weapon == None and self.panoply == None:
-            print('You do not have any equipment right now.')
+    def unequip(self, arg: item):
+        if self.weapon is None and self.panoply is None:
+            print('You do not have any equipment at the moment.')
+
+        elif arg == 'all':
+            if self.weapon is not None:
+                self.inventory.append(self.weapon)
+                print(self.weapon, 'unequiped.')
+                self.weapon = None
+            if self.panoply is not None:
+                self.inventory.append(self.panoply)
+                print(self.panoply, 'unequiped.')
+                self.panoply = None
+        
         else:
-            pass
+            try:
+                # lines 408 -> 412 transform input into list filled with items (objects) to unequip
+                temp = ["".join(i) for i in arg]
+                if temp[-1] ==  ',' : temp.pop() # remove the last comma from user input
+                items_name = "".join(temp).split(', ') 
+                items_to_unequip = [item(i, **worldItems[i]) for i in items_name]
             
+                for i in items_to_unequip:
+                    if i.type == 'Panoply':
+                        if self.panoply is not None:
+                            self.inventory.append(i)
+                            print(i, 'unequiped.')
+                            self.panoply = None
+                    elif i.type == 'Weapon':
+                        if self.weapon is not None:
+                            self.inventory.append(i)
+                            print(i, 'unequiped.')
+                            self.weapon = None
+                    else:
+                        print(i, 'is not equiped at the moment')   
+            except:
+                print('Some item(s) do not exist or are not in your stuff.')
               
     def weight(self):
         return sum(i.weight for i in self.inventory)

@@ -53,4 +53,16 @@ worldItems = {
             GROUNDDESC : 'A red cup is on that shelf. It looks like a Health potion.',
             DESC : 'This is a description',
             },
+
+        'Wind Cloak' : {
+            TYPE : 'Panoply',
+            TAKEABLE :  True,
+            TRADABLE : True,
+            SELL_PRICE : 10,
+            BUY_PRICE : 25,
+            WEIGHT : 10,
+            DEFENSE : 10,
+            GROUNDDESC : 'Grey cloak.',
+            DESC : 'A grey and used cloak but still functionnal.',
         }
+    }

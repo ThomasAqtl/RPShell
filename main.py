@@ -1,7 +1,3 @@
-"""
-
-"""
-
 import cmd
 import os
 #from termcolor import colored
@@ -164,8 +160,28 @@ class rpshellPrompt(cmd.Cmd):
 
     def complete_equip(self, text, line, begidx, endix):
         """Auto completion when player uses 'equip'"""
-        return tuple(i.name+', ' for i in user.inventory if i.type == 'Weapon' \
-            or i.type == 'Panoply')
+        return tuple(i.name + ', ' for i in user.inventory if i.name.startswith(text))
+
+    def do_unequip(self, arg):
+        """Unequip item(s) if possible.
+        -- unequip [weapon], [panoply]
+        """
+        user.unequip(arg)
+
+    def complete_unequip(self, text, line, begidx, endix):
+        """Auto completion when player uses 'unequip'"""
+        if user.weapon is None and user.panoply is None:
+            return None
+        elif user.panoply is not None and user.weapon is None:
+            return tuple(i.name + ', ' for i in [user.panoply] if i.name.startswith(text))
+        elif user.panoply is None and user.weapon is not None:
+            return tuple(i.name + ', ' for i in [user.weapon] if i.name.startswith(text))
+        else:
+            return tuple(i.name + ', ' for i in [user.panoply, user.weapon] if i.name.startswith(text))
+
+    def do_stuff(self, arg):
+        """Show your stuff."""
+        user.stuff()
 
     def do_leave(self, arg):
         """Leave conversation with NPC."""

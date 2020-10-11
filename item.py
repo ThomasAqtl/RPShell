@@ -45,7 +45,10 @@ class item():
 
     # the name of the item is unique (i.e. different stats => different item)
     def __eq__(self, other) -> bool:
-        return self.name == other.name
+        try:
+            return self.name == other.name
+        except:
+            return False
 
     def __hash__(self):
         return hash((self.name))
